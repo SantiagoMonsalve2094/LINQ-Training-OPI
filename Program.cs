@@ -1,13 +1,29 @@
-﻿using LinqTraining.Data;
+using LinqTraining.Data;
 using LinqTraining.Models;
 
-List <Product> products = SampleData.GetProducts(); 
-List <Book> books = SampleData.GetBooks();
-List<Order> orders = SampleData.GetOrders();
-List<Employee> employees = SampleData.GetEmployees();
+List<Book> books = SampleData.GetBooks();
 
-var employeesDictionary = employees.ToDictionary(e => e.Id);
+var topBooksByGenre = books
+    .GroupBy(book => book.Genre)
+    .OrderBy(group => group.Key)
+    .Select(group => new
+    {
+        Genre = group.Key,
+        TopBooks = group
+            .OrderByDescending(book => book.UnitsSold)
+            .Take(5)
+            .ToList()
+    })
+    .ToList();
 
-Console.WriteLine($"Employee with ID 3: {employeesDictionary[3].Name}");
+Console.WriteLine("Top 5 most sold books by genre:");
 
- 
+foreach (var genreGroup in topBooksByGenre)
+{
+    Console.WriteLine($"\nGenre: {genreGroup.Genre}");
+
+    foreach (var book in genreGroup.TopBooks)
+    {
+        Console.WriteLine($"- {book.Title} | Units sold: {book.UnitsSold}");
+    }
+}
