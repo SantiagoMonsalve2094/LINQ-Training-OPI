@@ -1,13 +1,23 @@
-﻿using LinqTraining.Data;
+using LinqTraining.Data;
 using LinqTraining.Models;
 
-List <Product> products = SampleData.GetProducts(); 
-List <Book> books = SampleData.GetBooks();
 List<Order> orders = SampleData.GetOrders();
-List<Employee> employees = SampleData.GetEmployees();
 
-var employeesDictionary = employees.ToDictionary(e => e.Id);
+var topCustomers = orders
+    .GroupBy(order => order.CustomerName)
+    .Select(group => new
+    {
+        Customer = group.Key,
+        TotalAmount = group.Sum(order => order.Amount),
+        TotalOrders = group.Count()
+    })
+    .OrderByDescending(result => result.TotalAmount)
+    .Take(3)
+    .ToList();
 
-Console.WriteLine($"Employee with ID 3: {employeesDictionary[3].Name}");
+Console.WriteLine("Top 3 customers who bought the most:");
 
- 
+foreach (var customer in topCustomers)
+{
+    Console.WriteLine($"- {customer.Customer} | Amount: {customer.TotalAmount:C} | Orders: {customer.TotalOrders}");
+}
