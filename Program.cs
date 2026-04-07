@@ -1,13 +1,26 @@
-﻿using LinqTraining.Data;
+using LinqTraining.Data;
 using LinqTraining.Models;
 
-List <Product> products = SampleData.GetProducts(); 
-List <Book> books = SampleData.GetBooks();
-List<Order> orders = SampleData.GetOrders();
-List<Employee> employees = SampleData.GetEmployees();
+List<Book> books = SampleData.GetBooks();
 
-var employeesDictionary = employees.ToDictionary(e => e.Id);
+Console.Write("Write part of the book title: ");
+string partialName = Console.ReadLine()?.Trim() ?? string.Empty;
 
-Console.WriteLine($"Employee with ID 3: {employeesDictionary[3].Name}");
+var matchingBooks = books
+    .Where(book => book.Title.Contains(partialName, StringComparison.OrdinalIgnoreCase))
+    .OrderBy(book => book.Title)
+    .ToList();
 
- 
+Console.WriteLine("\nSearch results:");
+
+if (!matchingBooks.Any())
+{
+    Console.WriteLine("No books found.");
+}
+else
+{
+    foreach (var book in matchingBooks)
+    {
+        Console.WriteLine($"- {book.Title}");
+    }
+}
