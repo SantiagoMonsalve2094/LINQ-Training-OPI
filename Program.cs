@@ -1,13 +1,18 @@
-﻿using LinqTraining.Data;
+using LinqTraining.Data;
 using LinqTraining.Models;
 
-List <Product> products = SampleData.GetProducts(); 
-List <Book> books = SampleData.GetBooks();
 List<Order> orders = SampleData.GetOrders();
-List<Employee> employees = SampleData.GetEmployees();
 
-var employeesDictionary = employees.ToDictionary(e => e.Id);
+var customersWithNoCompletedOrders = orders
+    .GroupBy(order => order.CustomerName)
+    .Where(group => !group.Any(order => order.Status == "Completed"))
+    .Select(group => group.Key)
+    .OrderBy(customerName => customerName)
+    .ToList();
 
-Console.WriteLine($"Employee with ID 3: {employeesDictionary[3].Name}");
+Console.WriteLine("Customers with no completed orders:");
 
- 
+foreach (var customerName in customersWithNoCompletedOrders)
+{
+    Console.WriteLine($"- {customerName}");
+}
